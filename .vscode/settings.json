@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "First_FPS_Game_Unity.sln"
+    "dotnet.defaultSolution": "FirstFPS_Game.sln"
 }
