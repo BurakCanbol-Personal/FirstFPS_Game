@@ -768,7 +768,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 685901023}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Stairs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1960,6 +1960,7 @@ GameObject:
   - component: {fileID: 1948132899}
   - component: {fileID: 1948132901}
   - component: {fileID: 1948132898}
+  - component: {fileID: 1948132902}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -2004,11 +2005,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 907637b95ec305745bb03d3f2c38cda3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initalMoveSpeed: 12
+  initalMoveSpeed: 5
   gravity: -19.81
   jumpHeight: 1
   groundDistance: 0.4
   runningSpeed: 2
+  groundDrag: 5
+  airDrag: 3
+  runningDrag: 2
   characterController: {fileID: 1948132898}
   groundCheck: {fileID: 2089360332}
   groundMask:
@@ -2023,7 +2027,7 @@ Transform:
   m_GameObject: {fileID: 1948132897}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.07999979, z: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2044,6 +2048,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cf7ffdf10d884438c70cb550db7f68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!54 &1948132902
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1948132897}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 2
 --- !u!1 &2032503514
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,5 +6,5 @@ public enum PlayerState
     Walking,
     Running,
     Jumping,
-    Attacking
+    //Attacking
 }
