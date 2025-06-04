@@ -5,6 +5,6 @@ public enum PlayerState
     Idle,
     Walking,
     Running,
-    Jumping,
+    Jumping
     //Attacking
 }

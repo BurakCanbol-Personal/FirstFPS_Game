@@ -32,7 +32,6 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 velocity;
     private bool isGrounded;
     private float movementSpeed;
-    private bool isRunning;
     private bool isJumping;
 
 
@@ -57,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
 
         SetPlayerDrag();
 
-        LimitPlayerSpeed();
+        // LimitPlayerSpeed();
 
         velocity.y += gravity * Time.deltaTime;
         characterController.Move(velocity * Time.deltaTime);
@@ -81,10 +80,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void SetPlayerDrag()
     {
-        if (isRunning)
+        if (IsRunning())
         {
             playerRigidbody.linearDamping = runningDrag;
-        } else if (isJumping)
+        }
+        else if (IsJumping())
         {
             playerRigidbody.linearDamping = airDrag;
         }
@@ -94,15 +94,15 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void LimitPlayerSpeed()
-    {
-        Vector3 flatVelocity = new Vector3(playerRigidbody.linearVelocity.x, 0f, playerRigidbody.linearVelocity.z);
-        if( flatVelocity.magnitude > movementSpeed)
-        {
-            Vector3 limitedVelocity = flatVelocity.normalized * movementSpeed;
-            playerRigidbody.linearVelocity = new Vector3(limitedVelocity.x, playerRigidbody.linearVelocity.y, limitedVelocity.z);
-        }
-    }
+    // private void LimitPlayerSpeed()
+    // {
+    //     Vector3 flatVelocity = new Vector3(playerRigidbody.linearVelocity.x, 0f, playerRigidbody.linearVelocity.z);
+    //     if( flatVelocity.magnitude > movementSpeed)
+    //     {
+    //         Vector3 limitedVelocity = flatVelocity.normalized * movementSpeed;
+    //         playerRigidbody.linearVelocity = new Vector3(limitedVelocity.x, playerRigidbody.linearVelocity.y, limitedVelocity.z);
+    //     }
+    // }
 
     private bool IsGrounded()
     {
@@ -126,18 +126,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void SetRunningSpeed()
     {
-        var _isRunning = IsRunning();
-        if (Input.GetKey(KeyCode.LeftShift) && movementDirection != Vector3.zero && !_isRunning)
+        if (IsRunning())
         {
-            playerStateController.ChangeState(PlayerState.Running);
-            movementSpeed *= runningSpeed; // Increase speed for running
-            isRunning = true;
+            movementSpeed = initalMoveSpeed * runningSpeed; // Increase speed for running
+            //playerStateController.ChangeState(PlayerState.Running);
         }
         else
         {
-            playerStateController.ChangeState(PlayerState.Walking);
             movementSpeed = initalMoveSpeed; // Reset speed to walking
-            isRunning = false;
+            //playerStateController.ChangeState(PlayerState.Walking);
         }
     }
 
@@ -174,7 +171,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsRunning()
     {
-        return isRunning;
+        return Input.GetKey(KeyCode.LeftShift) && movementDirection != Vector3.zero && isGrounded;
     }
 
     private bool IsJumping()
@@ -182,3 +179,4 @@ public class PlayerMovement : MonoBehaviour
         return isJumping;
     }
 }
+
