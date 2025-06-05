@@ -94,16 +94,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // private void LimitPlayerSpeed()
-    // {
-    //     Vector3 flatVelocity = new Vector3(playerRigidbody.linearVelocity.x, 0f, playerRigidbody.linearVelocity.z);
-    //     if( flatVelocity.magnitude > movementSpeed)
-    //     {
-    //         Vector3 limitedVelocity = flatVelocity.normalized * movementSpeed;
-    //         playerRigidbody.linearVelocity = new Vector3(limitedVelocity.x, playerRigidbody.linearVelocity.y, limitedVelocity.z);
-    //     }
-    // }
-
     private bool IsGrounded()
     {
         return isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
@@ -117,7 +107,7 @@ public class PlayerMovement : MonoBehaviour
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
             isJumping = true;
         }
-        
+
         if(isGrounded && velocity.y <= 0)
         {
             isJumping = false;
@@ -159,7 +149,7 @@ public class PlayerMovement : MonoBehaviour
         {
             playerStateController.ChangeState(newState);
         }
-        
+
         Debug.Log($"Current State: {newState}, Is Grounded: {isGrounded}, Is Running: {_isRunning}, Is Jumping: {_isJumping}");
     }
 
@@ -178,5 +168,6 @@ public class PlayerMovement : MonoBehaviour
     {
         return isJumping;
     }
+
 }
 
