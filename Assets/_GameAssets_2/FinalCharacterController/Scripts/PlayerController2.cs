@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.XR;
 
@@ -17,7 +18,11 @@ public class PlayerContoller2 : MonoBehaviour
     [SerializeField] private float sprintAcceleration = 0.5f;
     [SerializeField] private float sprintSpeed = 7f;
     [SerializeField] private float drag = 0.1f;
+    [SerializeField] private float jumpSpeed = 1.0f;
+    [SerializeField] private float gravity = -20f;
     [SerializeField] private float movingThreshold = 0.01f; // Threshold to consider movement input significant
+    [SerializeField] private float _verticalVelocity = 0f; // Vertical velocity for jumping and falling
+
 
 
 
@@ -37,6 +42,8 @@ public class PlayerContoller2 : MonoBehaviour
 
     #endregion
 
+
+
     #region StartUp
     private void Awake()
     {
@@ -51,10 +58,13 @@ public class PlayerContoller2 : MonoBehaviour
 
     #endregion
 
+
+
     #region Update Logic
     private void Update()
     {
         UpdateMovementState();
+        HandleVerticalMovement();
         HandleLateralMovement();
     }
 
@@ -64,16 +74,47 @@ public class PlayerContoller2 : MonoBehaviour
         bool isMovementInput = _playerLocomotionInput.MovementInput != Vector2.zero;
         bool isMovingLaterally = IsMovingLaterally();
         bool isSprinting = _playerLocomotionInput.SprintToggledOn && isMovingLaterally;
+        bool isGrounded = IsGrounded();
 
         PlayerMovementState lateralState = isSprinting ? PlayerMovementState.Sprinting :
                                             isMovingLaterally || isMovementInput ? PlayerMovementState.Running : PlayerMovementState.Idling;
 
         _playerStates.SetPlayerMovementState(lateralState);
+
+        // Handle jumping and falling states
+        if (!isGrounded && _characterController.velocity.y > 0f)
+        {
+            _playerStates.SetPlayerMovementState(PlayerMovementState.Jumping);
+        }
+        else if (!isGrounded && _characterController.velocity.y <= 0f)
+        {
+            _playerStates.SetPlayerMovementState(PlayerMovementState.Falling);
+        }
     }
+
+    private void HandleVerticalMovement()
+    {
+        bool isGrounded = _playerStates.InGroundedState();
+
+        if (isGrounded && _verticalVelocity < 0)
+        {
+            _verticalVelocity = 0f;
+        }
+
+        _verticalVelocity += gravity * Time.deltaTime; // Apply gravity when grounded
+        
+        if (_playerLocomotionInput.JumpPressed && isGrounded)
+        {
+            _verticalVelocity += Mathf.Sqrt(jumpSpeed * -3.0f * gravity);
+        }
+        
+    }
+
 
     private void HandleLateralMovement()
     {
         bool isSprinting = _playerStates.CurrentMovementState == PlayerMovementState.Sprinting;
+        bool isGrounded = _playerStates.InGroundedState();
 
         // state dependent movement parameters
         float lateralAcceleration = isSprinting ? sprintAcceleration : runAcceleration;
@@ -91,6 +132,7 @@ public class PlayerContoller2 : MonoBehaviour
         Vector3 dragVector = newVelocity.normalized * drag * Time.deltaTime;
         newVelocity = (newVelocity.magnitude > drag * Time.deltaTime) ? newVelocity - dragVector : Vector3.zero;
         newVelocity = Vector3.ClampMagnitude(newVelocity, clampLateralMagnitude);
+        newVelocity.y += _verticalVelocity; // Add vertical velocity to the new velocity
 
         //Move character (Unity suggests only calling this once per frame)
         _characterController.Move(newVelocity * Time.deltaTime);
@@ -120,5 +162,12 @@ public class PlayerContoller2 : MonoBehaviour
         Vector3 lateralVelocity = new Vector3(_characterController.velocity.x, 0f, _characterController.velocity.y);
         return lateralVelocity.magnitude > movingThreshold; // Adjust the threshold as needed
     }
+
+    private bool IsGrounded()
+    {
+        return _characterController.isGrounded;
+        
+    }
+
     #endregion
 }

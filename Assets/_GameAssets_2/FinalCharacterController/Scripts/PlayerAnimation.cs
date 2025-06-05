@@ -13,6 +13,9 @@ public class PlayerAnimation : MonoBehaviour
     private static int inputXHash = Animator.StringToHash("inputX");
     private static int inputYHash = Animator.StringToHash("inputY");
     private static int inputMagnitudeHash = Animator.StringToHash("inputMagnitude");
+    private static int isGroundedHash = Animator.StringToHash("isGrounded");
+    private static int isFallingHash = Animator.StringToHash("isFalling");
+    private static int isJumpingHash = Animator.StringToHash("isJumping");
 
     private Vector3 _currentBlendInput = Vector3.zero;
 
@@ -29,12 +32,21 @@ public class PlayerAnimation : MonoBehaviour
 
     private void UpdateAnimatorParameters()
     {
+        bool isIdling = _platerStates.CurrentMovementState == PlayerMovementState.Idling;
+        bool isRunning = _platerStates.CurrentMovementState == PlayerMovementState.Running;
         bool isSprinting = _platerStates.CurrentMovementState == PlayerMovementState.Sprinting;
+        bool isJumping = _platerStates.CurrentMovementState == PlayerMovementState.Jumping;
+        bool isFalling = _platerStates.CurrentMovementState == PlayerMovementState.Falling;
+        bool isGrounded = _platerStates.InGroundedState();
 
 
         Vector2 inputTarget = isSprinting ? _playerLocomotionInput.MovementInput * 1.5f : _playerLocomotionInput.MovementInput;
         _currentBlendInput = Vector3.Lerp(_currentBlendInput, inputTarget, locomotionBlendSpeed * Time.deltaTime);
 
+
+        _animator.SetBool(isGroundedHash, isGrounded);
+        _animator.SetBool(isFallingHash, isFalling);
+        _animator.SetBool(isJumpingHash, isJumping);
 
         _animator.SetFloat(inputXHash, _currentBlendInput.x);
         _animator.SetFloat(inputYHash, _currentBlendInput.y);
