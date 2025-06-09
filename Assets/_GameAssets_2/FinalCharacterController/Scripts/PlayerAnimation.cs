@@ -40,7 +40,10 @@ public class PlayerAnimation : MonoBehaviour
         bool isGrounded = _platerStates.InGroundedState();
 
 
-        Vector2 inputTarget = isSprinting ? _playerLocomotionInput.MovementInput * 1.5f : _playerLocomotionInput.MovementInput;
+        Vector2 inputTarget = isSprinting ? _playerLocomotionInput.MovementInput * 1.5f :
+                                isRunning ? _playerLocomotionInput.MovementInput * 1f :
+                                _playerLocomotionInput.MovementInput * 0.5f;
+                                
         _currentBlendInput = Vector3.Lerp(_currentBlendInput, inputTarget, locomotionBlendSpeed * Time.deltaTime);
 
 

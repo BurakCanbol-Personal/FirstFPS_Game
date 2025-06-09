@@ -7,11 +7,13 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
 {
     #region Class Variables
     [SerializeField] private bool holdToShift = true;
-    public bool SprintToggledOn { get; private set; }
+   
     public PlayerControls PlayerControls { get; private set; }
     public Vector2 MovementInput { get; private set; }
     public Vector2 LookInput { get; private set; }
     public bool JumpPressed { get; private set; }
+     public bool SprintToggledOn { get; private set; }
+    public bool WalkToggleOn { get; private set; }
 
     #endregion
 
@@ -70,6 +72,13 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
 
         JumpPressed = true;
     }
-    
+
+    public void OnToggleWalk(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+
+        WalkToggleOn = !WalkToggleOn;
+    }
+
     #endregion
 }
