@@ -188,11 +188,11 @@ public class PlayerContoller2 : MonoBehaviour
         bool isWalking = _playerStates.CurrentMovementState == PlayerMovementState.Walking;
 
         // state dependent movement parameters
-        float lateralAcceleration = isGrounded ? inAirAceleration :
+        float lateralAcceleration = !isGrounded ? inAirAceleration :
                                     isWalking ? walkAcceleration :
                                     isSprinting ? sprintAcceleration : runAcceleration;
 
-        float clampLateralMagnitude = isGrounded ? sprintSpeed :
+        float clampLateralMagnitude = !isGrounded ? sprintSpeed :
                                        isWalking ? walkSpeed :
                                        isSprinting ? sprintSpeed : runSpeed;
 
