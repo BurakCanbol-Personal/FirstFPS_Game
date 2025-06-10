@@ -18,6 +18,11 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
     #endregion
 
     #region StartUp
+
+    void Awake()
+    {
+        JumpPressed = false;
+    }
     private void OnEnable()
     {
         PlayerControls = new PlayerControls();

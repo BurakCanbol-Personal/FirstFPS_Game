@@ -16,6 +16,7 @@ public class PlayerContoller2 : MonoBehaviour
 
 
 
+
     [Header("Movement Settings")]
     [Header("Walk")]
     [SerializeField] private float walkAcceleration = 25f;
@@ -31,6 +32,8 @@ public class PlayerContoller2 : MonoBehaviour
 
     [Header("In Air")]
     [SerializeField] private float inAirAceleration = 25f;
+    [SerializeField] private float terminalVelocity = 50f; // Maximum speed in the air, used to limit the horizontal velocity when airborne
+    [SerializeField] private float inAirDrag = 5f;
 
     [Header("Rest")]
     [SerializeField] private float drag = 20f;
@@ -89,11 +92,13 @@ public class PlayerContoller2 : MonoBehaviour
 
         _antiBump = sprintSpeed;
         _stepOffset = _characterController.stepOffset;
+        
     }
 
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        _verticalVelocity = 0f;
     }
 
     #endregion
@@ -117,7 +122,7 @@ public class PlayerContoller2 : MonoBehaviour
         bool isMovementInput = _playerLocomotionInput.MovementInput != Vector2.zero;
         bool isMovingLaterally = IsMovingLaterally();
         bool isSprinting = _playerLocomotionInput.SprintToggledOn && isMovingLaterally;
-        bool isWalking = (isMovingLaterally && !canRun) || _playerLocomotionInput.WalkToggleOn;
+        bool isWalking = isMovingLaterally && (!canRun || _playerLocomotionInput.WalkToggleOn);
         bool isGrounded = IsGrounded();
 
         PlayerMovementState lateralState = isWalking ? PlayerMovementState.Walking :
@@ -162,10 +167,15 @@ public class PlayerContoller2 : MonoBehaviour
             _verticalVelocity += Mathf.Sqrt(jumpSpeed * 3.0f * gravity);
             _jumpedLastFrame = true;
         }
-        
-        if(_playerStates.IsStateGroundedState(_lastMovementState) && !isGrounded)
+
+        if (_playerStates.IsStateGroundedState(_lastMovementState) && !isGrounded)
         {
             _verticalVelocity += _antiBump; // Reset vertical velocity when transitioning from grounded to airborne
+        }
+        
+        if(Mathf.Abs(_verticalVelocity) > Mathf.Abs(terminalVelocity))
+        {
+            _verticalVelocity = -1f * Mathf.Abs(terminalVelocity); // Limit vertical velocity to terminal velocity
         }
 
     }
@@ -194,8 +204,9 @@ public class PlayerContoller2 : MonoBehaviour
         Vector3 newVelocity = _characterController.velocity + movementDelta;
 
         // Add drag to player
-        Vector3 currentDrag = newVelocity.normalized * drag * Time.deltaTime;
-        newVelocity = (newVelocity.magnitude > drag * Time.deltaTime) ? newVelocity - currentDrag : Vector3.zero;
+        float dragMagnitude = isGrounded ? drag : inAirDrag;
+        Vector3 currentDrag = newVelocity.normalized * dragMagnitude * Time.deltaTime;
+        newVelocity = (newVelocity.magnitude > dragMagnitude * Time.deltaTime) ? newVelocity - currentDrag : Vector3.zero;
         newVelocity = Vector3.ClampMagnitude(new Vector3(newVelocity.x, 0f, newVelocity.z), clampLateralMagnitude);
         newVelocity.y += _verticalVelocity;
         newVelocity = !isGrounded ? HandleSteepWalls(newVelocity) : newVelocity;
@@ -247,7 +258,7 @@ public class PlayerContoller2 : MonoBehaviour
     #region State Check
     private bool IsMovingLaterally()
     {
-        Vector3 lateralVelocity = new Vector3(_characterController.velocity.x, 0f, _characterController.velocity.y);
+        Vector3 lateralVelocity = new Vector3(_characterController.velocity.x, 0f, _characterController.velocity.z);
         return lateralVelocity.magnitude > movingThreshold; // Adjust the threshold as needed
     }
 

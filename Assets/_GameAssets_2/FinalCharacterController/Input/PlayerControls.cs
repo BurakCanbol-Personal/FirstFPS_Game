@@ -222,7 +222,7 @@ namespace _GameAssets_2.FinalCharacterController
                 {
                     ""name"": """",
                     ""id"": ""247eca87-fc37-457b-a87f-ae8634f19b2a"",
-                    ""path"": ""<Keyboard>/v"",
+                    ""path"": ""<Keyboard>/capsLock"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
